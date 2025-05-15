@@ -1,0 +1,16 @@
+# Java
+/datafetcher/target/
+*.class
+
+# Env files
+*.env
+
+# IDE config
+*.iml
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+
