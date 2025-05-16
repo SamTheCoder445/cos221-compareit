@@ -20,20 +20,19 @@ class Database{
         $this->connection->set_charset("utf8mb4");
    }
 
-<<<<<<< HEAD
    public static function getInstance(){
        if(self::$instance===null){
            self::$instance = new self();
        }
        return self::$instance;
-=======
+
    public static getInstance(){
    /*creates only one instance of itself if not created already*/
         if(self::$instance === null){
             self::$instance = new self();
         }
         return self::$instance;
->>>>>>> dev-backend
+
    }
 
    public function getConnection(){
