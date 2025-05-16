@@ -19,5 +19,20 @@ class Database{
 
        $this->connection->set_charset("utf8mb4");
    }
+
+   public static function getInstance(){
+       if(self::$instance===null){
+           self::$instance = new self();
+       }
+       return self::$instance;
+   }
+
+   public function getConnection(){
+       return $this->connection;
+   }
+
+   public function __clone(){}
+   public function __wakeup(){}
+
 }
 ?>
