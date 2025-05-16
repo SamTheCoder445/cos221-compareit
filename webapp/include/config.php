@@ -21,6 +21,7 @@ class Database{
    }
 
    public static getInstance(){
+   /*creates only one instance of itself if not created already*/
         if(self::$instance === null){
             self::$instance = new self();
         }
