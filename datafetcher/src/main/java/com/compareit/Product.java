@@ -12,7 +12,9 @@ public class Product {
     public String thumbnail;
     public float rating;
     public String availabilityStatus;
+     public String[] images;
     public UserReview[] reviews; 
+    public double price;
 
 }
 

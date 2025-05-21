@@ -64,8 +64,9 @@
       <groupId>org.codehaus.mojo</groupId>
       <artifactId>exec-maven-plugin</artifactId>
       <version>3.1.0</version>
+    
       <configuration>
-        <mainClass>com.compareit.ProductFetcher</mainClass>
+        <mainClass>com.compareit.DataFetcher</mainClass>
       </configuration>
     </plugin>
     
