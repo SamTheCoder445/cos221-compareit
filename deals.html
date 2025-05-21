@@ -1,0 +1,93 @@
+<!-- deals.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameZone - Hot Deals</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="game-theme">
+  <div class="loading-screen">
+    <div class="pixel-loader">LOADING...</div>
+</div>
+
+<header class="game-header">
+    <h1 class="pixel-text">GAME<span>ZONE</span></h1>
+    <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li class="active"><a href="deals.html">Deals</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="wishlist.html">Wishlist</a></li>
+            <li><a href="about.html">About Us</a></li>
+        </ul>
+    </nav>
+    <div class="currency-selector">
+        <select id="currency-select">
+            <option value="ZAR">ZAR</option>
+            <!-- Other currencies will be loaded dynamically -->
+        </select>
+    </div>
+</header>
+
+<main class="game-main">
+    <section class="search-filters">
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search games & accessories...">
+            <button id="search-btn">SEARCH</button>
+        </div>
+        <div class="filters">
+            <select id="category-filter">
+                <option value="">All Categories</option>
+                <!-- Categories loaded dynamically -->
+            </select>
+            <select id="brand-filter">
+                <option value="">All Brands</option>
+                <!-- Brands loaded dynamically -->
+            </select>
+            <select id="country-filter">
+                <option value="">All Countries</option>
+                <!-- Countries loaded dynamically -->
+            </select>
+            <div class="price-range">
+                <label>Price Range:</label>
+                <input type="range" id="price-slider" min="0" max="1000" step="10">
+                <span id="price-display">ZAR 0 - 1000</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="product-grid">
+        <!-- Products will be loaded dynamically here -->
+    </section>
+    
+    <main class="game-main">
+        <section class="deals-header">
+            <h2 class="pixel-text">HOT <span>DEALS</span></h2>
+            <div class="sort-options">
+                <label>Sort by:</label>
+                <select id="sort-deals">
+                    <option value="discount_desc">Highest Discount</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="product-grid">
+            <!-- Deals will be loaded here -->
+        </section>
+    </main>
+
+    <footer class="game-footer">
+      <p>© 2025 GameZone - All rights reserved</p>
+  </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/deals.js"></script>
+</body>
+</html>

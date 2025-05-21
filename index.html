@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="css/loading.css" />
+  </head>
+  <body>
+    
+    <main class="game-main">
+       <header class="game-header">
+        <h1 class="pixel-text">COMPARE<span>IT</span></h1>
+        <nav class="game-nav">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="deals.html">Categories</a></li>
+            <li><a href="wishlist.htm;">Wishlist</a></li>
+            <li id="login-link"><a href="login.html">Login</a></li>
+            <li><a href="signup.html" >Sign Up</a></li>
+
+            <li id="logout-link" style="display:none;"><a href="logout.php">Logout</a></li>
+            <li>
+    </li>
+        </ul>
+</div>
+
+        </nav>
+        
+    </header>
+      <section class="search-filters">
+        <select id="currency-selector">
+          <option value="ZAR">ZAR</option>
+        </select>
+        <div id="loading-screen" style="display: none">Loading...</div>
+
+        <div class="search-box">
+          <input type="text" id="search-bar" placeholder="Search Products To Compare..." />
+          <button class="search-button" onclick="searchProducts()">
+            SEARCH
+          </button>
+        </div>
+
+        <div class="filters">
+          <div class="price-range">
+            <label>Price Range:</label>
+            <input type="number" id="min-price" placeholder="Min" /> -
+            <input type="number" id="max-price" placeholder="Max" />
+          </div>
+
+          <select id="category-dropdown">
+            <option value="">All Categories</option>
+          </select>
+
+          <select id="brand-dropdown">
+            <option value="">All Brands</option>
+          </select>
+
+          <select id="country-dropdown">
+            <option value="">All Countries</option>
+          </select>
+
+          <button id="apply-filters" onclick="applyFilters()">
+            Apply Filters
+          </button>
+        </div>
+      </section>
+
+      <div class="sort-products">
+        <label>Sort By:</label>
+        <select id="sort-dropdown" class="sort-dropdown">
+          <option value="newest">Select sort option</option>
+          <option value="price-low-high">Lowest to Highest price</option>
+          <option value="price-high-low">Highest to Lowest price</option>
+        </select>
+      </div>
+      <!-- Retailers Section -->
+      <section class="retailers-section">
+        <h2>Our Retail Partners</h2>
+        <div class="retailers-grid">
+          <!-- Amazon -->
+          <div class="retailer-card">
+            <img
+              src="https://th.bing.com/th/id/OIP.douAQqLQCydHXDqsPfOcpwHaEK?cb=iwp2&rs=1&pid=ImgDetMain"
+              alt="Amazon"
+            />
+            <span>Amazon</span>
+          </div>
+
+          <!-- Takealot -->
+          <div class="retailer-card">
+            <img
+              src="https://play-lh.googleusercontent.com/Zy-BRdWCKBqJeDCcoFnrEoGeCqQnSEfs3qBaC7_nWHLMm3-Nfs1HRul7cBJqjLiDH2h4"
+              alt="Takealot"
+            />
+            <span>Takealot</span>
+          </div>
+
+          <!-- Game -->
+          <div class="retailer-card">
+            <img
+              src="https://d1ralsognjng37.cloudfront.net/95c00978-d77b-4770-8dab-9bfa14427de1.jpeg"
+              alt="Game"
+            />
+            <span>Game</span>
+          </div>
+
+          <!-- Makro -->
+          <div class="retailer-card">
+            <img
+              src="https://businesstech.co.za/news/wp-content/uploads/2019/11/Makro-Black-Friday.png"
+              alt="Makro"
+            />
+            <span>Makro</span>
+          </div>
+
+          <div class="retailer-card">
+            <img
+              src="https://mybroadband.co.za/news/wp-content/uploads/2013/09/Incredible-Connection.jpg"
+              alt="Takealot"
+            />
+            <span> Incredible connections</span>
+          </div>
+
+          <div class="retailer-card">
+            <img
+              src="https://th.bing.com/th/id/OIP.ZCicsG7p-1C_ryChksaslQHaHa?cb=iwp2&rs=1&pid=ImgDetMain"
+              alt="iStore"
+            />
+            <span> iStore</span>
+          </div>
+          
+          <div class="retailer-card">
+            <img
+              src="https://th.bing.com/th/id/OIP.z3QQ-ne-bxIdUQpwLtnzhwHaHV?cb=iwp2&rs=1&pid=ImgDetMain"
+              alt="iStore"
+            />
+            <span> MTN </span>
+          </div>
+          <div class="retailer-card">
+            <img
+              src="https://th.bing.com/th/id/OIP.GKAiOtzC1JA4SVNPllLREQAAAA?cb=iwp2&rs=1&pid=ImgDetMain"
+              alt="iStore"
+            />
+            <span> Vodacom </span>
+          </div>
+          <!-- Add more retailers as needed -->
+        </div>
+      </section>
+      <section class="product-grid" id="products-gallery-grid">
+        <!-- Products will be loaded dynamically here -->
+      </section>
+      <footer class="game-footer">
+  <p>&copy; Game Store | Powered by COS216</p>
+
+</footer>
+
+    </main>
+
+    <script src="api.js"></script>
+    
+  </body>
+</html>

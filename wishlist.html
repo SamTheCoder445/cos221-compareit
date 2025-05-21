@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameZone - Your Wishlist</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="game-theme">
+  <div class="loading-screen">
+      <div class="pixel-loader">LOADING...</div>
+  </div>
+  
+  <header class="game-header">
+      <h1 class="pixel-text">GAME<span>ZONE</span></h1>
+      <nav class="game-nav">
+          <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="deals.html">Deals</a></li>
+              <li><a href="cart.html">Cart</a></li>
+              <li class="active"><a href="wishlist.html">Wishlist</a></li>
+              <li><a href="about.html">About Us</a></li>
+          </ul>
+      </nav>
+      <div class="currency-selector">
+          <select id="currency-select">
+              <option value="ZAR">ZAR</option>
+              <!-- Other currencies will be loaded dynamically -->
+          </select>
+      </div>
+  </header>
+
+  <main class="game-main wishlist-page">
+    <select id="sort-wishlist">
+      <option value="price_asc">Price: Low to High</option>
+      <option value="price_desc">Price: High to Low</option>
+  </select>
+  
+      <h2 class="pixel-text">YOUR <span>WISHLIST</span></h2>
+      
+      <div class="wishlist-items" id="wishlist-items">
+          <!-- Wishlist items will be loaded here -->
+      </div>
+  </main>
+
+  <footer class="game-footer">
+      <p>© 2025 GameZone - All rights reserved</p>
+  </footer>
+
+  <!-- Include external JS files -->
+  <script src="js/api.js"></script> 
+  <script src="js/products.js"></script>
+  <script src="js/wishlist.js"></script> <!-- Wishlist JS functions -->
+</body>
+</html>

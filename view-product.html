@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameZone - Product Details</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <style>
+        .slick-carousel img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            max-height: 350px; /* Adjust the max height for better proportion */
+        }
+
+        .thumbnail-container img {
+            width: 60px; /* Reduced the thumbnail size */
+            height: auto;
+            margin: 5px;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .thumbnail-container img:hover {
+            border-color: #ffcc00; /* Add hover effect for thumbnails */
+        }
+
+        .product-images {
+            width: 60%; /* Reduced the main product image size */
+            margin-right: 20px;
+        }
+
+        .product-info {
+            width: 35%; /* Adjusted width for product info */
+        }
+
+        .price-container {
+            margin-top: 20px;
+        }
+
+        .price-container #product-price {
+            font-size: 1.5em; /* Larger font for price */
+            font-weight: bold;
+        }
+
+        .price-container #product-original-price {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .product-description {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .product-specs table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-specs th, .product-specs td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body class="game-theme">
+    <div class="loading-screen" id="loading" style="display:none;">
+        <div class="pixel-loader">LOADING...</div>
+    </div>
+    
+    <header class="game-header">
+        <h1 class="pixel-text">GAME<span>ZONE</span></h1>
+        <nav class="game-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="deals.html">Deals</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="wishlist.html">Wishlist</a></li>
+                <li><a href="about.html">About Us</a></li>
+            </ul>
+        </nav>
+        <div class="currency-selector">
+            <select id="currency-select">
+                <option value="ZAR">ZAR</option>
+                <!-- Other currencies will be loaded dynamically -->
+            </select>
+        </div>
+    </header>
+
+    <main class="game-main">
+        <section class="product-detail">
+            <div class="product-container" style="display: flex; flex-wrap: wrap; align-items: flex-start;">
+                <div class="product-images">
+                    <!-- Slick Carousel -->
+                    <div class="slick-carousel">
+                        <div><img src="images/psuedo.jpg" alt="Product Image 1"></div>
+                        <div><img src="images/false.jpg" alt="Product Image 2"></div>
+                        <div><img src="images/OIP.jpeg" alt="Product Image 3"></div>
+                    </div>
+                    <!-- Thumbnail Container -->
+                    <div class="thumbnail-container" id="thumbnails">
+                        <img src="images/psuedo.jpg" alt="Thumbnail 1">
+                        <img src="images/false.jpg" alt="Thumbnail 2">
+                        <img src="images/OIP.jpeg" alt="Thumbnail 3">
+                    </div>
+                </div>
+
+                <div class="product-info">
+                    <h1 id="product-title">2 1/4'' x 50' Thermal Paper 50 Rolls</h1>
+                    <div class="product-meta">
+                        <span id="product-brand">Brand: PAPRMA</span>
+                        <span id="product-categories">Category: Receipt Paper</span>
+                    </div>
+
+                    <div class="price-container">
+                        <div id="product-price">Price: R 367.15</div>
+                        <div id="product-original-price" class="original-price">Original Price: R 400.00</div>
+                    </div>
+
+                    <div class="product-description" id="product-description">
+                        This high-quality thermal paper is perfect for use in POS cash registers, credit card machines, Square terminals, and Clover Minis. With a size of 2 1/4'' x 50', this pack contains 50 rolls, ensuring your business operations run smoothly without interruptions.
+                    </div>
+
+                    <div class="product-features">
+                        <h3>Features</h3>
+                        <ul id="feature-list">
+                            <li>Size: 2 1/4'' x 50'</li>
+                            <li>50 rolls per pack</li>
+                            <li>Compatible with POS systems, credit card machines, Square terminals, Clover Minis</li>
+                            <li>High-quality thermal paper for clear and crisp prints</li>
+                            <li>Durable and long-lasting</li>
+                        </ul>
+                    </div>
+
+                    <div class="product-actions">
+                        <button id="add-to-cart">ADD TO CART</button>
+                        <button id="add-to-wishlist">WISHLIST</button>
+                    </div>
+
+                    <div class="product-specs">
+                        <h3>Specifications</h3>
+                        <table>
+                            <tr>
+                                <th>Country of Origin</th>
+                                <td id="product-country">South Africa</td>
+                            </tr>
+                            <tr>
+                                <th>Dimensions</th>
+                                <td id="product-dimensions">2 1/4'' x 50'</td>
+                            </tr>
+                            <tr>
+                                <th>Manufacturer</th>
+                                <td id="product-manufacturer">PAPRMA</td>
+                            </tr>
+                            <tr>
+                                <th>Availability</th>
+                                <td id="product-availability">In Stock</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="game-footer">
+        <p>© 2025 GameZone - All rights reserved</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/view-product.js"></script>
+    <script>
+        // Initialize Slick carousel
+        $(document).ready(function(){
+            $('.slick-carousel').slick({
+                autoplay: true,
+                autoplaySpeed: 3000,
+                dots: true,
+                arrows: true,
+                infinite: true,
+                slidesToShow: 1,
+                slidesToScroll: 1
+            });
+
+            // Thumbnail click to change main image
+            $('#thumbnails img').on('click', function() {
+                var newSrc = $(this).attr('src');
+                $('.slick-carousel').slick('slickGoTo', $('#thumbnails img').index(this)); // Navigate carousel to the clicked thumbnail
+            });
+        });
+    </script>
+</body>
+</html>
