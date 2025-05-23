@@ -2,6 +2,10 @@
 /datafetcher/target/
 *.class
 
+# PHP config
+webapp/include/config.php
+/config.php
+
 # Env files
 *.env
 
@@ -13,4 +17,3 @@
 # System files
 .DS_Store
 Thumbs.db
-
