@@ -1,11 +1,4 @@
-/**
- 
- * 
- * **Why Asynchronous XMLHttpRequest?**
- * - Asynchronous requests allow the page to load while data is being fetched.
- * - This prevents UI freezing, improving the user experience.
- * - Allows better error handling and flexibility in updating the UI dynamically.
- */
+
 console.log("Hi there");
 const API_KEY = "5d732ddb5bc491f7e408b494cd90fbb8";
 const studentnum = "u23533413";
