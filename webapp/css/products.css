@@ -1,0 +1,96 @@
+/* ===== BASE STYLES ===== */
+body, h1, p {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ===== SEARCH & FILTERS ===== */
+.search-filter-container {
+    margin-bottom: 30px;
+}
+
+.search-bar {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    font-size: 16px;
+}
+
+.search-bar button {
+    padding: 12px 20px;
+    background-color: #ffcc00;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.search-bar button:hover {
+    background-color: #e6b800;
+}
+
+.filter-sort-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.filter, .sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter label, .sort label {
+    font-weight: bold;
+}
+
+.filter select, .sort select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* ===== PRODUCT GRID ===== */
+#product-container {
+    margin-top: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+    .filter-sort-container {
+        flex-direction: column;
+    }
+    
+    .filter, .sort {
+        width: 100%;
+    }
+    
+    .filter select, .sort select {
+        width: 100%;
+    }
+}
