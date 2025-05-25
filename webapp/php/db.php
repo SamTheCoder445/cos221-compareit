@@ -50,4 +50,6 @@ class Database{
         return null;
     }
 }
+
+$db = Database::getInstance();
 ?>
