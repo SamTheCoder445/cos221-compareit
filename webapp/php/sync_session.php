@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['status' => 'success']);
             exit;
         }*/
-        $db = Database::getInstance();
         $user = $db->validateAPIKey($data['api_key']);
         if($user !== null){
             $_SESSION['api_key'] = $data['api_key'];
