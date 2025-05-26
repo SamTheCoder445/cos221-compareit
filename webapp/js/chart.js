@@ -1,6 +1,23 @@
+
+let pricesChart, wishlistsChart;
+
+function updateChart(chart, labels, data, labelText ="", borderColour = "blue"){
+    chart.data.label = labels;
+    chart.data.datasets = [{
+        label: labelText,
+        data: data,
+        borderColor: borderColour,
+        fill: false,
+        tension: 0.3
+    }];
+    chart.update();
+}
+
+
 document.addEventListener('DOMContentLoaded', function(){
+    
     const ctx = document.getElementById('priceChart').getContext('2d');
-    new Chart(ctx, {
+    pricesChart = new Chart(ctx, {
         type: 'line',
         data: {
         labels: ['May 5', 'May 10', 'May 15', 'May 20', 'May 25'],
@@ -21,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     const ctxWishlist = document.getElementById('wishlistChart').getContext('2d');
-    new Chart(ctxWishlist, {
+    wishlistsChart = new Chart(ctxWishlist, {
         type: 'line',
         data: {
         labels: ['May 5', 'May 10', 'May 15', 'May 20', 'May 25'],
@@ -40,4 +57,8 @@ document.addEventListener('DOMContentLoaded', function(){
         }
         }
     });
-;})
+;
+
+})
+
+export {updateChart, pricesChart, wishlistsChart};
