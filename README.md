@@ -5,8 +5,8 @@ A web application that helps users compare prices of products across online reta
 ---
 ## Table of Contents
 - [Features](#features)
-- [Technologies Used](#technologies-used
-- [Installation](#installation)
+- [Technologies Used](#technologies-used)
+- [Installation & Set Up](#installation)
 - [Usage](#usage)
 ---
 
@@ -25,10 +25,26 @@ A web application that helps users compare prices of products across online reta
 - Bootstrap for the admin dashboard
 ---
 
-## Installation
+## Installation & Set Up
 To run this project locally:
 1. Clone the repository
  ```bash
 git clone https://github.com/SamTheCoder445/cos221-compareit
 cd cos221-compareit
-
+```
+2. Install PHP
+```bash
+sudo apt install php
+```
+3. Install MariaDB
+```bash
+sudo apt install mariadb-server
+```
+4. Import the database dump
+---
+## Usage
+To use this application, run this command
+```bash
+php -S localhost:8000
+```
+then navigate to http://localhost:8000/php/products.php
