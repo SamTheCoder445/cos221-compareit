@@ -42,8 +42,8 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                 <h6>Total Products</h6>
-                <h4>12,340</h4>
-                <small class="text-muted">+3.2% (in the last 30 days)</small>
+                <h4 id="products-count">12,340</h4>
+                <small class="text-muted" id="products-growth">+3.2% (in the last 30 days)</small>
                 </div>
             </div>
             </div>
@@ -51,8 +51,8 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                 <h6>Reviews</h6>
-                <h4>1,265</h4>
-                <small class="text-muted">+12.4% (in the last 30 days)</small>
+                <h4 id="reviews-count">1,265</h4>
+                <small class="text-muted" id="reviews-growth">+12.4% (in the last 30 days)</small>
                 </div>
             </div>
             </div>
@@ -60,8 +60,8 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                 <h6>Users</h6>
-                <h4>8,721</h4>
-                <small class="text-muted">+1.1% (in the last 30 days)</small>
+                <h4 id="users-count">8,721</h4>
+                <small class="text-muted" id="users-growth">+1.1% (in the last 30 days)</small>
                 </div>
             </div>
             </div>
@@ -69,8 +69,8 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                 <h6>Stores Tracked</h6>
-                <h4>85</h4>
-                <small class="text-muted">0% (in the last 30 days)</small>
+                <h4 id="retailers-count">85</h4>
+                <small class="text-muted" id="retailers-growth">0% (in the last 30 days)</small>
                 </div>
             </div>
             </div>
@@ -151,8 +151,8 @@
 
         </div>
     </div>
-
-    <script src="/js/chart.js"></script>
+    <script type="module" src="/js/dashboard.js"></script>
+    <script type="module" src="/js/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
