@@ -36,18 +36,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const data = await response.json();
 
-            if (data.status === 'success') {
-                // Store user data in sessionStorage
-                sessionStorage.setItem('auth', JSON.stringify({
-                    api_key: data.data.api_key,
-                    user_id: data.data.user_id,
-                    name: data.data.name,
-                    user_type: data.data.user_type
-                }));
+            // if (data.status === 'success') {
+            //     // Store user data in sessionStorage
+            //     sessionStorage.setItem('auth', JSON.stringify({
+            //         api_key: data.data.api_key,
+            //         user_id: data.data.user_id,
+            //         name: data.data.name,
+            //         user_type: data.data.user_type
+            //     }));
 
-                // Redirect to products page
-                window.location.href = 'products.php';
-            } else {
+            //     // Redirect to products page
+            //     window.location.href = 'products.php';
+            // } 
+            
+            if (data.status === 'success') {
+    const auth = {
+        api_key: data.data.api_key,
+        user_id: data.data.user_id,
+        name: data.data.name,
+        user_type: data.data.user_type
+    };
+
+    sessionStorage.setItem('auth', JSON.stringify(auth));
+
+    // Sync with PHP session
+    await fetch('../php/sync_session.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api_key: auth.api_key })
+    });
+
+    // Now redirect to products
+    // window.location.href = 'products.php';
+    window.location.replace('products.php');
+
+}
+
+            
+            
+            
+            
+            
+            
+            
+            else {
                 throw new Error(data.message || 'Invalid email or password');
             }
         } catch (error) {

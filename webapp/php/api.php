@@ -59,6 +59,20 @@ class API {
                 case 'GetAllPrices':
                  $this->getAllPrices($data);
                  break;
+                case 'AddReview':
+                 $this->addReview($data);
+                 break;
+                case 'GetAllReviews':
+                 $this->getAllReviews($data);
+                 break;
+                case 'AddToWishlist':
+                $this->addToWishlist($data);
+                break;
+                case 'RemoveFromWishlist':
+                $this->removeFromWishlist($data);
+                break;case 'GetWishlist':
+                $this->getWishlist($data);
+                break;
                 default:
                     throw new Exception('Invalid request type', 400);
             }
@@ -224,8 +238,6 @@ $hashedPassword = hash('sha256', $data['password'] . $salt) . ':' . $salt;
     }
 }
 
-
-
 private function getAllProducts($data) {
     // Validate API key
     if (!isset($data['apikey'])) {
@@ -245,19 +257,20 @@ private function getAllProducts($data) {
     }
 
     // Optional filters
+    $product_id = $data['product_id'] ?? null;
     $brand_id = $data['brand_id'] ?? null;
     $category_id = $data['category_id'] ?? null;
     $search = $data['search'] ?? null;
     $min_price = $data['min_price'] ?? null;
     $max_price = $data['max_price'] ?? null;
 
-    // Pagination defaults
+    // Pagination
     $limit = isset($data['limit']) ? (int)$data['limit'] : 50;
     $offset = isset($data['offset']) ? (int)$data['offset'] : 0;
 
     $params = [];
 
-    // Base SQL
+    // Base SQL with brand and category joins
     $sql = "
         SELECT 
             p.product_id,
@@ -265,11 +278,15 @@ private function getAllProducts($data) {
             p.description,
             p.thumbnail,
             p.brand_id,
+            b.name AS brand,
             p.category_id,
+            c.name AS category,
             p.availability_status,
             lp.price AS lowest_price,
             r.name AS retailer_name
         FROM products p
+        LEFT JOIN brands b ON p.brand_id = b.brand_id
+        LEFT JOIN categories c ON p.category_id = c.category_id
         LEFT JOIN (
             SELECT pr.product_id, MIN(pr.price) AS price
             FROM prices pr
@@ -280,33 +297,54 @@ private function getAllProducts($data) {
         WHERE 1 = 1
     ";
 
-    // Filters
-    if ($brand_id !== null && $brand_id !== 'all') {
-        $sql .= " AND p.brand_id = :brand_id";
-        $params[':brand_id'] = $brand_id;
+    if ($product_id !== null) {
+        $sql .= " AND p.product_id = :product_id";
+        $params[':product_id'] = $product_id;
+    } else {
+        if ($brand_id !== null && $brand_id !== 'all') {
+            $sql .= " AND p.brand_id = :brand_id";
+            $params[':brand_id'] = $brand_id;
+        }
+        if ($category_id !== null && $category_id !== 'all') {
+            $sql .= " AND p.category_id = :category_id";
+            $params[':category_id'] = $category_id;
+        }
+        if (!empty($search)) {
+            $sql .= " AND LOWER(p.title) LIKE :search";
+            $params[':search'] = '%' . strtolower($search) . '%';
+        }
+        if (!empty($min_price)) {
+            $sql .= " AND lp.price >= :min_price";
+            $params[':min_price'] = $min_price;
+        }
+        if (!empty($max_price)) {
+            $sql .= " AND lp.price <= :max_price";
+            $params[':max_price'] = $max_price;
+        }
+
+        // Pagination
+        $sql .= " LIMIT :limit OFFSET :offset";
+        $params[':limit'] = $limit;
+        $params[':offset'] = $offset;
     }
 
-    if ($category_id !== null && $category_id !== 'all') {
-        $sql .= " AND p.category_id = :category_id";
-        $params[':category_id'] = $category_id;
+    $stmt = $this->conn->prepare($sql);
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val, is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR);
+    }
+    $stmt->execute();
+    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($product_id !== null) {
+        if (count($products) === 0) {
+            echo json_encode(["status" => "error", "message" => "Product not found."]);
+        } else {
+            echo json_encode(["status" => "success", "product" => $products[0]]);
+        }
+        return;
     }
 
-    if (!empty($search)) {
-        $sql .= " AND LOWER(p.title) LIKE :search";
-        $params[':search'] = '%' . strtolower($search) . '%';
-    }
-
-    if (!empty($min_price)) {
-        $sql .= " AND lp.price >= :min_price";
-        $params[':min_price'] = $min_price;
-    }
-
-    if (!empty($max_price)) {
-        $sql .= " AND lp.price <= :max_price";
-        $params[':max_price'] = $max_price;
-    }
-
-    // Count total matching records
+    // Total count for filtered results
     $countSql = "
         SELECT COUNT(*) FROM products p
         LEFT JOIN (
@@ -316,22 +354,27 @@ private function getAllProducts($data) {
         ) lp ON p.product_id = lp.product_id
         WHERE 1 = 1
     ";
-    $countParams = $params;
+    $countParams = [];
 
     if ($brand_id !== null && $brand_id !== 'all') {
         $countSql .= " AND p.brand_id = :brand_id";
+        $countParams[':brand_id'] = $brand_id;
     }
     if ($category_id !== null && $category_id !== 'all') {
         $countSql .= " AND p.category_id = :category_id";
+        $countParams[':category_id'] = $category_id;
     }
     if (!empty($search)) {
         $countSql .= " AND LOWER(p.title) LIKE :search";
+        $countParams[':search'] = '%' . strtolower($search) . '%';
     }
     if (!empty($min_price)) {
         $countSql .= " AND lp.price >= :min_price";
+        $countParams[':min_price'] = $min_price;
     }
     if (!empty($max_price)) {
         $countSql .= " AND lp.price <= :max_price";
+        $countParams[':max_price'] = $max_price;
     }
 
     $countStmt = $this->conn->prepare($countSql);
@@ -341,25 +384,13 @@ private function getAllProducts($data) {
     $countStmt->execute();
     $total = (int)$countStmt->fetchColumn();
 
-    // Add pagination to query
-    $sql .= " LIMIT :limit OFFSET :offset";
-    $params[':limit'] = $limit;
-    $params[':offset'] = $offset;
-
-    $stmt = $this->conn->prepare($sql);
-    foreach ($params as $key => $val) {
-        $stmt->bindValue($key, $val, is_int($val) ? PDO::PARAM_INT : PDO::PARAM_STR);
-    }
-
-    $stmt->execute();
-    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     echo json_encode([
         "status" => "success",
         "data" => $products,
         "total" => $total
     ]);
 }
+
 
 
 
@@ -487,24 +518,234 @@ private function getProductImages($data) {
 
 
 
+private function addReview($data) {
+    if (!isset($data['apikey'], $data['product_id'], $data['review_rating'], $data['comment'])) {
+        $this->sendError("Missing required fields", 400);
+    }
+
+    $apikey = $data['apikey'];
+    $product_id = (int) $data['product_id'];
+    $rating = (int) $data['review_rating'];
+    $comment = trim($data['comment']);
+
+    if ($rating < 1 || $rating > 5) {
+        $this->sendError("Rating must be between 1 and 5", 400);
+    }
+
+    // Step 1: Get user_id from API key
+    $stmt = $this->conn->prepare("SELECT user_id FROM users WHERE api_key = ?");
+    $stmt->execute([$apikey]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        $this->sendError("Invalid API key", 401);
+    }
+
+    $user_id = $user['user_id'];
+
+    // Step 2: Check if user is a customer
+    $stmt = $this->conn->prepare("SELECT 1 FROM customers WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+
+    if ($stmt->rowCount() === 0) {
+        $this->sendError("Only customers can leave reviews", 403);
+    }
+
+    // Step 3: Insert the review
+    $review_date = date('Y-m-d');
+
+    $stmt = $this->conn->prepare("
+        INSERT INTO user_reviews (user_id, product_id, review_rating, comment, review_date) 
+        VALUES (?, ?, ?, ?, ?)
+    ");
+
+    $success = $stmt->execute([$user_id, $product_id, $rating, $comment, $review_date]);
+
+    if ($success) {
+        $this->sendSuccess(['message' => 'Review added successfully']);
+    } else {
+        $this->sendError("Failed to add review", 500);
+    }
+}
+
+
+
+private function getAllReviews($data) {
+    if (!isset($data['product_id'])) {
+        $this->sendError("Missing product_id", 400);
+    }
+
+    $product_id = (int)$data['product_id'];
+    
+
+    // Get dummy reviews
+    $stmt = $this->conn->prepare("
+        SELECT review_rating, comment, reviewer_name, review_date 
+        FROM dummy_reviews 
+        WHERE product_id = ?
+    ");
+    $stmt->execute([$product_id]);
+    $dummyReviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Get real user reviews
+    $stmt = $this->conn->prepare("
+        SELECT ur.review_rating, ur.comment, CONCAT(u.name, ' ', u.surname) AS reviewer_name, ur.review_date 
+        FROM user_reviews ur
+        JOIN users u ON ur.user_id = u.user_id
+        WHERE ur.product_id = ?
+    ");
+    $stmt->execute([$product_id]);
+    $userReviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Combine all reviews
+    $allReviews = array_merge($dummyReviews, $userReviews);
+
+    // Calculate average rating
+    $totalRating = 0;
+    $count = 0;
+    foreach ($allReviews as $review) {
+        $totalRating += (int)$review['review_rating'];
+        $count++;
+    }
+
+    $averageRating = $count > 0 ? round($totalRating / $count, 2) : null;
+
+    // Return response
+    echo json_encode([
+        "status" => "success",
+        "reviews" => $allReviews,
+        "average_rating" => $averageRating
+    ]);
+}
+
+private function addToWishlist($data) {
+    // 1. Validate required input
+    if (!isset($data['apikey'], $data['product_id'])) {
+        $this->sendError("Missing 'apikey' or 'product_id'", 400);
+    }
+
+    $apikey = $data['apikey'];
+    $product_id = (int)$data['product_id'];
+
+    // 2. Validate API key and ensure user is a customer
+    $stmt = $this->conn->prepare("
+        SELECT u.user_id
+        FROM users u
+        JOIN customers c ON u.user_id = c.user_id
+        WHERE u.api_key = ?
+    ");
+    $stmt->execute([$apikey]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        $this->sendError("Only logged-in customers can add to wishlist", 403);
+    }
+
+    $user_id = $user['user_id'];
+
+    // 3. Validate that product exists (optional, but good practice)
+    $stmt = $this->conn->prepare("SELECT 1 FROM products WHERE product_id = ?");
+    $stmt->execute([$product_id]);
+    if (!$stmt->fetch()) {
+        $this->sendError("Product not found", 404);
+    }
+
+    // 4. Check if product already in wishlist
+    $stmt = $this->conn->prepare("
+        SELECT 1 FROM wishlists WHERE user_id = ? AND product_id = ?
+    ");
+    $stmt->execute([$user_id, $product_id]);
+
+    if ($stmt->fetch()) {
+        $this->sendSuccess(['message' => 'Product already in wishlist']);
+    }
+
+    // 5. Insert into wishlist
+    $stmt = $this->conn->prepare("
+        INSERT INTO wishlists (user_id, product_id) VALUES (?, ?)
+    ");
+    $stmt->execute([$user_id, $product_id]);
+
+    $this->sendSuccess(['message' => 'Product added to wishlist']);
+}
 
 
 
 
+private function removeFromWishlist($data) {
+    // 1. Validate input
+    if (!isset($data['apikey'], $data['product_id'])) {
+        $this->sendError("Missing 'apikey' or 'product_id'", 400);
+    }
+
+    $apikey = $data['apikey'];
+    $product_id = (int)$data['product_id'];
+
+    // 2. Verify customer with API key
+    $stmt = $this->conn->prepare("
+        SELECT u.user_id
+        FROM users u
+        JOIN customers c ON u.user_id = c.user_id
+        WHERE u.api_key = ?
+    ");
+    $stmt->execute([$apikey]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        $this->sendError("Only logged-in customers can remove from wishlist", 403);
+    }
+
+    $user_id = $user['user_id'];
+
+    // 3. Attempt to delete from wishlist
+    $stmt = $this->conn->prepare("
+        DELETE FROM wishlists WHERE user_id = ? AND product_id = ?
+    ");
+    $stmt->execute([$user_id, $product_id]);
+
+    if ($stmt->rowCount() > 0) {
+        $this->sendSuccess(['message' => 'Product removed from wishlist']);
+    } else {
+        $this->sendSuccess(['message' => 'Product was not in wishlist']);
+    }
+}
 
 
+private function getWishlist($data) {
+    // Validate input
+    if (!isset($data['apikey'])) {
+        $this->sendError("Missing 'apikey'", 400);
+    }
 
+    $apikey = $data['apikey'];
 
+    // Validate API key and get user_id (must be a customer)
+    $stmt = $this->conn->prepare("
+        SELECT u.user_id 
+        FROM users u
+        JOIN customers c ON u.user_id = c.user_id
+        WHERE u.api_key = ?
+    ");
+    $stmt->execute([$apikey]);
+    $user = $stmt->fetch();
 
+    if (!$user) {
+        $this->sendError("Invalid API key or not a customer", 403);
+    }
 
+    // Fetch wishlist items with title and thumbnail from products
+    $stmt = $this->conn->prepare("
+        SELECT p.product_id, p.title, p.thumbnail
+        FROM wishlists w
+        JOIN products p ON w.product_id = p.product_id
+        WHERE w.user_id = ?
+        ORDER BY w.created_at DESC
+    ");
+    $stmt->execute([$user['user_id']]);
+    $wishlist = $stmt->fetchAll();
 
-
-
-
-
-
-
-
+    $this->sendSuccess(['wishlist' => $wishlist]);
+}
 
 
 

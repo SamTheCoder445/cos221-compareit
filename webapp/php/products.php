@@ -9,8 +9,13 @@ if (session_status() === PHP_SESSION_NONE) {
 $pageTitle = "Products - CompareIt";
 
 // Include header
+$includeLoader = true;
 include 'header.php';
+include 'loader.php';
 ?>
+
+
+
 
 <div class="container">
     <!-- Search and filter controls -->
@@ -62,6 +67,10 @@ include 'header.php';
 
     <h1>Products</h1>
     
+    <div id="loader" style="display: none;">
+  <div class="spinner"></div>
+</div>
+
     <!-- Product Grid Container -->
     <div id="product-container">
         <div class="product-grid">
@@ -74,5 +83,7 @@ include 'header.php';
 
 <?php include 'footer.php'; ?>
 <script src="../js/products.js"></script>
+<script src="../js/loader.js"></script>
+
 </body>
 </html>

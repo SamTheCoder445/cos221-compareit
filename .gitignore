@@ -3,7 +3,7 @@
 *.class
 
 # PHP config
-webapp/include/config.php
+webapp/php/config.php
 /config.php
 
 # Env files

@@ -1,12 +1,42 @@
-/* ===== BASE STYLES ===== */
-body, h1, p {
+body, ul, li, h1, h2, h3, p {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
 }
 
-h1 {
-    font-family: 'Open Sans', sans-serif;
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links li a {
+    color: #333;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.nav-links li a.active {
+    font-weight: bold;
+    color: #ff6600;
+}
+
+.logo img {
+    width: 150px;
+    height: auto;
+}
+
+
+header {
+    background: linear-gradient(135deg, #ffcc00, #ff9900);
+    padding: 10px 20px;
 }
 
 .container {
@@ -15,7 +45,7 @@ h1 {
     margin: 0 auto;
 }
 
-/* ===== SEARCH & FILTERS ===== */
+/* SEARCH & FILTER STYLES */
 .search-filter-container {
     margin-bottom: 30px;
 }
@@ -69,7 +99,7 @@ h1 {
     font-size: 14px;
 }
 
-/* ===== PRODUCT GRID ===== */
+/* PRODUCT GRID */
 #product-container {
     margin-top: 20px;
 }
@@ -80,17 +110,91 @@ h1 {
     gap: 20px;
 }
 
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
-@media (max-width: 768px) {
-    .filter-sort-container {
-        flex-direction: column;
-    }
-    
-    .filter, .sort {
-        width: 100%;
-    }
-    
-    .filter select, .sort select {
-        width: 100%;
-    }
+
+.product-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.product-card img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.product-card h3.product-title {
+    color: black;
+    margin-top: 10px;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+/* WISHLIST BUTTON */
+.wishlist-btn {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: none;
+    background-color: orange;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.wishlist-btn:hover {
+    background-color: darkorange;
+}
+
+.wishlist-btn.added {
+    background-color: hotpink;
+}
+
+
+
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 30px 0;
+}
+
+.pagination-controls button {
+    background-color: #f97316; /* orange */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.pagination-controls button:hover {
+    background-color: #ea580c;
+}
+
+
+#loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid orange;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

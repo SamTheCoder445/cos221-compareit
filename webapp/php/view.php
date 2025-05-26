@@ -24,7 +24,13 @@ include 'header.php';
         <button id="next-img">→</button>
     </div>
 
+
+    
+<p id="product-description"></p>
+
     <table id="product-details"></table>
+    
+
 
     <h3>💰 Available Prices</h3>
     <table id="price-table">
@@ -59,6 +65,7 @@ include 'header.php';
 
 
 <script src="../js/view.js"></script>
+
 </body>
 </html>
 

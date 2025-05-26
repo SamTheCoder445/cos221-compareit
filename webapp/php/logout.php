@@ -2,7 +2,13 @@
 session_start();
 session_destroy();
 ?>
-<script>
-sessionStorage.removeItem('auth');
-window.location.href = 'login.php';
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        sessionStorage.removeItem('auth');
+        window.location.href = 'login.php';
+    </script>
+</head>
+<body></body>
+</html>
