@@ -1,6 +1,6 @@
 # CompareIt
 
-A web application that helps users compare prices of products across online retailers, enabling smarter and more cost-effective shopping decisions.
+**CompareIt** is a lightweight web application that helps users compare prices of products across multiple online retailers, enabling smarter, faster, and more cost-effective shopping decisions.
 
 ---
 ## Table of Contents
@@ -19,9 +19,10 @@ A web application that helps users compare prices of products across online reta
 ---
 
 ## Technologies Used
-- PHP
+- PHP ≥ 7.0
 - MySQL
 - HTML, CSS, JavaScript
+- Web browser (Chrome, Firefox, etc.)
 - Bootstrap for the admin dashboard
 ---
 
