@@ -1,0 +1,119 @@
+/* login.css */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 120px); /* Adjust based on header/footer height */
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.login-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+}
+
+.login-card h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 24px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #555;
+    font-size: 14px;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #ffcc00;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 204, 0, 0.2);
+}
+
+.login-btn {
+    padding: 12px;
+    background-color: #ffcc00;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background-color: #e6b800;
+}
+
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 14px;
+    display: none;
+}
+
+.signup-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+.signup-link a {
+    color: #ffcc00;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.signup-link a:hover {
+    color: #e6b800;
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 20px;
+    }
+    
+    .login-card h1 {
+        font-size: 20px;
+    }
+    
+    .form-group input {
+        padding: 10px;
+    }
+    
+    .login-btn {
+        padding: 10px;
+    }
+}

@@ -1,0 +1,271 @@
+body, ul, li, h1, h2, h3, p {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links li a {
+    color: #333;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.nav-links li a.active {
+    font-weight: bold;
+    color: #ff6600;
+}
+
+.logo img {
+    width: 150px;
+    height: auto;
+}
+
+
+header {
+    background: linear-gradient(135deg, #ffcc00, #ff9900);
+    padding: 10px 20px;
+}
+
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* SEARCH & FILTER STYLES */
+.search-filter-container {
+    margin-bottom: 30px;
+}
+
+.search-bar {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    font-size: 16px;
+}
+
+.search-bar button {
+    padding: 12px 20px;
+    background-color: #ffcc00;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.search-bar button:hover {
+    background-color: #e6b800;
+}
+
+.filter-sort-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.filter, .sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter label, .sort label {
+    font-weight: bold;
+}
+
+.filter select, .sort select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* PRODUCT GRID */
+#product-container {
+    margin-top: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+
+.product-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.product-card img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.product-card h3.product-title {
+    color: black;
+    margin-top: 10px;
+    font-size: 18px;
+    text-decoration: none;
+}
+
+/* WISHLIST BUTTON */
+.wishlist-btn {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: none;
+    background-color: orange;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.wishlist-btn:hover {
+    background-color: darkorange;
+}
+
+.wishlist-btn.added {
+    background-color: hotpink;
+}
+
+
+
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 30px 0;
+}
+
+.pagination-controls button {
+    background-color: #f97316; /* orange */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.pagination-controls button:hover {
+    background-color: #ea580c;
+}
+
+
+#loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.spinner {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid orange;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+/* TERMS OF SERVICE PAGE STYLES */
+
+body, ul, li, h1, h2, h3, p {
+    /* Already defined above, but re-adding color and line-height for TOS context */
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    color: #ff6600;
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 30px;
+}
+
+p {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+ul {
+    list-style: disc inside;
+    margin-bottom: 20px;
+    padding-left: 20px;
+    color: #555;
+}
+
+li {
+    margin-bottom: 8px;
+}
+
+a {
+    color: #ff6600;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.section-divider {
+    border-bottom: 2px solid #ffcc00;
+    margin: 40px 0 30px 0;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+        margin: 20px auto;
+    }
+}
