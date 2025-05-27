@@ -1,13 +1,13 @@
 <?php
-// Start session if not already started
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Set page title
+
 $pageTitle = "Wishlist - CompareIt";
 
-// Include header
+
 include 'header.php';
 ?>
 
@@ -22,7 +22,7 @@ include 'header.php';
 </div>
 
 <?php
-// Include footer
+
 include 'footer.php';
 ?>
 

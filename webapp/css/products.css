@@ -198,3 +198,60 @@ header {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+
+
+
+
+
+
+/* Save Preferences Button */
+.save-prefs-btn {
+    background-color: orange;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+   
+}
+
+.save-prefs-btn:hover {
+    background-color: orange;
+    transform: translateY(-2px);
+}
+
+.save-prefs-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.save-prefs-btn .fas {
+    font-size: 16px;
+}
+
+/* Success message */
+.preferences-saved {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: none;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

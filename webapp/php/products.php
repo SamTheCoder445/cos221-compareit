@@ -1,11 +1,11 @@
 
 <?php 
-// Start session if not already started
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Set page title
+
 $pageTitle = "Products - CompareIt";
 
 // Include header
@@ -64,7 +64,14 @@ include 'loader.php';
             </div>
         </div>
     </div>
+<div class="search-filter-container">
 
+    
+   
+    <button id="save-preferences-btn" class="save-prefs-btn">
+        <i class="fas fa-save"></i> Save Preferences
+    </button>
+</div>
     <h1>Products</h1>
     
     <div id="loader" style="display: none;">

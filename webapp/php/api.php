@@ -73,7 +73,22 @@ class API {
                 break;case 'GetWishlist':
                 $this->getWishlist($data);
                 break;
+                case 'GetDashboardData':
+                    $this->getDashboardData();
+                    break;
+                case 'GetDashboardGraphData':
+                    $this->getDashboardGraphData();
+                    break;
+                case 'AddUserPreferences':
+                $this->addUserPreferences($data); 
+                break;
+                case 'GetUserPreferences':
+                $this->getUserPreferences($data);
+                break;
                 default:
+                 case 'GetWishlist':
+                $this->getWishlist($data);
+                break;
                     throw new Exception('Invalid request type', 400);
             }
         } catch (Exception $e) {
@@ -643,7 +658,7 @@ private function addToWishlist($data) {
 
     $user_id = $user['user_id'];
 
-    // 3. Validate that product exists (optional, but good practice)
+    // 3. Validate that product exists 
     $stmt = $this->conn->prepare("SELECT 1 FROM products WHERE product_id = ?");
     $stmt->execute([$product_id]);
     if (!$stmt->fetch()) {
@@ -748,14 +763,386 @@ private function getWishlist($data) {
 }
 
 
+private function addUserPreferences($data = []) {
+    // Define guest account API key
+    $GUEST_API_KEY = 'b14561c4fc744210fe86c1eb1ab4a0663640ff12f75e6b7dfca9b4a37eca4756';
+
+    // Validate required fields
+    if (empty($data['api_key'])) {
+        throw new Exception("API key is required", 400);
+    }
+
+    // Block guest API key
+    if ($data['api_key'] === $GUEST_API_KEY) {
+        throw new Exception("Only logged in customers can save preferences", 403);
+    }
+
+    // Verify API key belongs to a customer
+    $stmt = $this->conn->prepare("
+        SELECT u.user_id 
+        FROM users u
+        JOIN customers c ON u.user_id = c.user_id
+        WHERE u.api_key = ?
+    ");
+    $stmt->execute([$data['api_key']]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        throw new Exception("Only logged in customers can save preferences", 403);
+    }
+
+    $user_id = $user['user_id'];
+
+    // Validate brand exists if provided
+    if (!empty($data['preferred_brand']) && $data['preferred_brand'] !== 'All Brands') {
+        $stmt = $this->conn->prepare("SELECT brand_id FROM brands WHERE name = ?");
+        $stmt->execute([$data['preferred_brand']]);
+        if (!$stmt->fetch()) {
+            throw new Exception("Brand '{$data['preferred_brand']}' does not exist", 400);
+        }
+    }
+
+    // Validate category exists if provided
+    if (!empty($data['preferred_category']) && $data['preferred_category'] !== 'All Categories') {
+        $stmt = $this->conn->prepare("SELECT category_id FROM categories WHERE name = ?");
+        $stmt->execute([$data['preferred_category']]);
+        if (!$stmt->fetch()) {
+            throw new Exception("Category '{$data['preferred_category']}' does not exist", 400);
+        }
+    }
+
+    // Validate price range if provided
+    $validPriceRanges = ['all', '0-500', '500-1000', '1000-5000', '5000-Infinity'];
+    if (!empty($data['preferred_price_range']) && !in_array($data['preferred_price_range'], $validPriceRanges)) {
+        throw new Exception("Invalid price range specified", 400);
+    }
+
+    // Validate sort_order if provided
+    if (isset($data['sort_order'])) {
+        $validSortOptions = ['Price: Low to High', 'Price: High to Low'];
+        if (!in_array($data['sort_order'], $validSortOptions)) {
+            throw new Exception("Invalid sort_order. Must be either 'Price: Low to High' or 'Price: High to Low'", 400);
+        }
+    }
+
+    // Prepare preferences array
+    $preferences = [
+        'user_id' => $user_id,
+        'preferred_brand' => $data['preferred_brand'] ?? null,
+        'preferred_category' => $data['preferred_category'] ?? null,
+        'preferred_price_range' => $data['preferred_price_range'] ?? null,
+        'sort_order' => $data['sort_order'] ?? null
+    ];
+
+    // Check if preferences exist
+    $stmt = $this->conn->prepare("SELECT user_id FROM user_preferences WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    
+    if ($stmt->fetch()) {
+        // Update existing preferences
+        $query = "UPDATE user_preferences SET ";
+        $updates = [];
+        $params = [];
+        
+        foreach (['preferred_brand', 'preferred_category', 'preferred_price_range', 'sort_order'] as $field) {
+            if (array_key_exists($field, $data)) {
+                $updates[] = "$field = ?";
+                $params[] = $preferences[$field];
+            }
+        }
+        
+        if (!empty($updates)) {
+            $query .= implode(', ', $updates) . ", last_updated = CURRENT_TIMESTAMP WHERE user_id = ?";
+            $params[] = $user_id;
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute($params);
+        }
+    } else {
+        // Insert new preferences
+        $fields = ['user_id'];
+        $placeholders = ['?'];
+        $params = [$user_id];
+        
+        foreach (['preferred_brand', 'preferred_category', 'preferred_price_range', 'sort_order'] as $field) {
+            if (array_key_exists($field, $data)) {
+                $fields[] = $field;
+                $placeholders[] = '?';
+                $params[] = $preferences[$field];
+            }
+        }
+        
+        $query = "INSERT INTO user_preferences (" . implode(', ', $fields) . ", last_updated) 
+                 VALUES (" . implode(', ', $placeholders) . ", CURRENT_TIMESTAMP)";
+        
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+    }
+
+    $this->sendSuccess([
+        'message' => 'Preferences saved successfully',
+        'user_id' => $user_id,
+        'preferences' => $preferences
+    ]);
+}
+
+private function getUserPreferences($data) {
+    // Define guest API key
+    $GUEST_API_KEY = 'b14561c4fc744210fe86c1eb1ab4a0663640ff12f75e6b7dfca9b4a37eca4756';
+
+    // Validate required fields
+    if (empty($data['api_key'])) {
+        throw new Exception("API key is required", 400);
+    }
+
+    // Block guest API key
+    if ($data['api_key'] === $GUEST_API_KEY) {
+        throw new Exception("Guest users cannot have preferences", 403);
+    }
+
+    // Verify API key belongs to a customer (not admin)
+    $stmt = $this->conn->prepare("
+        SELECT u.user_id 
+        FROM users u
+        LEFT JOIN admins a ON u.user_id = a.user_id
+        WHERE u.api_key = ? AND a.user_id IS NULL
+    ");
+    $stmt->execute([$data['api_key']]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        throw new Exception("Invalid API key or unauthorized user", 403);
+    }
+
+    // Get preferences
+    $stmt = $this->conn->prepare("
+        SELECT 
+            preferred_brand, 
+            preferred_category, 
+            preferred_price_range, 
+            sort_order,
+            last_updated
+        FROM user_preferences
+        WHERE user_id = ?
+    ");
+    $stmt->execute([$user['user_id']]);
+    $preferences = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $this->sendSuccess([
+        'preferences' => $preferences ?: null,
+        'user_id' => $user['user_id']
+    ]);
+}
+
+
+//////////////////////////////////////////////////////
+
+private function getDashboardData(){
+   
+    try{
+        $userCount = $this->getCount("users");
+        $userGrowth = $this->getGrowth("users", "created_at");
+
+        $productsCount = $this->getCount("products");
+        $productsGrowth = $this->getGrowth("products", "created_at");
+
+        $retailersCount = $this->getCount("retailers");
+        $retailersGrowth = $this->getGrowth("retailers", "created_at");
+
+        $reviewCount = $this->getCount("dummy_reviews");
+        $reviewsGrowth = $this->getGrowth("dummy_reviews", "review_date");
+
+        $topCategories = $this->getTopCategories();
+
+        http_response_code(200);
+        echo json_encode([
+            "status" => "success",
+            "data" => [
+                "users"=> [
+                    "count" => $userCount,
+                    "growth" => $userGrowth
+                ],
+                "products" =>[
+                    "count" => $productsCount,
+                    "growth" => $productsGrowth
+                ],
+                "retailers"=> [
+                    "count" => $retailersCount,
+                    "growth" => $retailersGrowth
+                ],
+                "reviews" =>[
+                    "count" => $reviewCount,
+                    "growth" => $reviewsGrowth
+                ],
+                "top_categories" => $topCategories
+            ]
+        ]);
+    }catch(Exception $e){
+        http_response_code(500);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Interal Server Error: ".$e
+        ]);
+        exit;
+    }
+    
+}
+
+private function getCount($table){
+    $allowedTables = ['users', 'products', 'retailers', 'dummy_reviews'];
+
+    if(!in_array($table, $allowedTables)){
+        http_response_code(404);
+        echo json_encode([
+            "status" => "success",
+            "message" => "table not recognised: ".$table
+        ]);
+        exit;
+    }
+    $stmt = $this->conn->prepare("SELECT COUNT(*) FROM ".$table);
+    $stmt->execute();
+    $count = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    return $count;
+}
+private function getGrowth($table, $column){
+    $allowedTables = ['users', 'products', 'retailers', 'dummy_reviews'];
+
+    if(!in_array($table, $allowedTables)){
+        http_response_code(404);
+        echo json_encode([
+            "status" => "success",
+            "message" => "table not recognised: " .$table
+        ]);
+        exit;
+    }
+    $sql = "SELECT
+            COUNT(CASE WHEN {$column} >= NOW() - INTERVAL 30 DAY THEN 1 END) AS recent,
+            COUNT(CASE WHEN {$column} >= NOW() - INTERVAL 60 DAY AND {$column} < NOW() - INTERVAL 30 DAY THEN 1 END) AS previous
+            FROM {$table}";
+
+    $stmt = $this->conn->prepare($sql);
+    if(!$stmt->execute()){
+        $this->sendError("Query execution failed", 500);
+    }
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $recent = (int)$results['recent'];
+    $previous = (int)$results['previous'];
+    $growth = $previous > 0 ? (($recent - $previous) / $previous)*100 : 0;
+    return $growth;
+}
+private function getDashboardGraphData(){
+    $priceData = $this->getPricesTrend();
+    $wishlistData = $this->getWishlistTrend();
+
+    http_response_code(200);
+    echo json_encode([
+        "status" => "success",
+        "data" => [
+            "prices" => [
+                "labels" => array_column($priceData, 'date'),
+                'average' => array_column($priceData, 'average_price'),
+                'data_points' => array_column($priceData, 'data_points')
+            ],
+            "wishlists" => [
+                "labels" => array_column($wishlistData, 'data'),
+                'data_points' => array_column($wishlistData, 'data_points')
+            ]
+        ]
+    ]);
+}
+private function getPricesTrend(){
+    $sql = "SELECT 
+                DATE(p.created_at) AS date,
+                ROUND(AVG(pr.price), 2) AS average_price,
+                COUNT(*) AS data_points
+            FROM 
+                prices pr
+            JOIN 
+                products p ON pr.product_id = p.product_id
+            WHERE 
+                p.created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+            GROUP BY 
+                DATE(p.created_at)
+            ORDER BY 
+                date ASC";
+
+    try{
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }catch(PDOException $e){
+        error_log("Database error in getPricesTrend(): ".$e->getMessage());
+        $this->sendError("Internal Server Issue", 500);
+    }
+}
+
+private function getWishlistTrend() {
+    $sql = "
+        WITH RECURSIVE date_series AS (
+            SELECT CURDATE() - INTERVAL 29 DAY AS date
+            UNION ALL
+            SELECT date + INTERVAL 1 DAY
+            FROM date_series
+            WHERE date + INTERVAL 1 DAY <= CURDATE()
+        )
+        SELECT
+            ds.date,
+            COUNT(w.product_id) AS save_count
+        FROM
+            date_series ds
+        LEFT JOIN wishlists w ON DATE(w.created_at) = ds.date
+        GROUP BY ds.date
+        ORDER BY ds.date ASC
+    ";
+
+    try {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    } catch (PDOException $e) {
+        error_log("Database error in getWishlistTrend(): " . $e->getMessage());
+        $this->sendError("Internal Server Issue", 500);
+    }
+}
+
+
+private function getTopCategories(){
+    $sql = "SELECT 
+                p.product_id,
+                p.title AS product_name,
+                COUNT(*) AS save_count,
+                COUNT(DISTINCT w.user_id) AS unique_users
+            FROM 
+                wishlists w
+            JOIN 
+                products p ON w.product_id = p.product_id
+            WHERE 
+                w.created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+            GROUP BY 
+                w.product_id
+            ORDER BY 
+                save_count DESC
+            LIMIT 5;";
+    try{
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }catch(PDOException $e){
+        error_log("Database error in getWishlistTrend(): ".$e->getMessage());
+        $this->sendError("Internal Server Issue:" .$e->getMessage(), 500);
+    }
+}
+
 
 
 }
 
  
 
-
-// Run the API
 $api = new API();
 $api->processRequest();
 

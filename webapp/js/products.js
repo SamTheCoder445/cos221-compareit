@@ -9,16 +9,19 @@ const productsPerPage = 50;
     const brandSelect = document.getElementById('brand-filter');
     const categorySelect = document.getElementById('category');
     const priceSelect = document.getElementById('price-range');
-    const sortSelect = document.getElementById('sort-by'); // <-- Get sort select element
+    const sortSelect = document.getElementById('sort-by'); 
     const searchInput = document.querySelector('.search-bar input');
     const searchButton = document.querySelector('.search-bar button');
     const productGrid = document.querySelector('.product-grid');
     const paginationContainer = document.querySelector('.pagination-controls');
+  /////////////////////////////////////
+    const savePrefsBtn = document.getElementById('save-preferences-btn');
+    const preferencesSavedMsg = document.createElement('div');
+    preferencesSavedMsg.className = 'preferences-saved';
+    preferencesSavedMsg.textContent = 'Preferences saved successfully!';
+    document.body.appendChild(preferencesSavedMsg);
 
-
-    // Initial load
-// loadUserWishlist();
-// setTimeout(loadProducts, 100); // wait briefly to sync wishlist before loading UI
+//////////////////////////////////////////////
 
 loadUserWishlist().then(loadProducts);
 
@@ -230,13 +233,6 @@ hideLoader(); // <-- Hide loader after response is handled
 
 
 
-
-
-
-
-
-
-
     function getApiKey() {
         const auth = JSON.parse(sessionStorage.getItem('auth'));
         if (auth && auth.api_key) {
@@ -251,10 +247,6 @@ hideLoader(); // <-- Hide loader after response is handled
 function getAuth() {
     return JSON.parse(sessionStorage.getItem('auth'));
 }
-
-
-
-
 
 
 
@@ -336,7 +328,7 @@ function loadUserWishlist() {
 
     if (isGuest(apiKey) || isAdmin()) {
         localStorage.removeItem('wishlist'); // No local wishlist for guests/admins
-        return Promise.resolve(); // ✅ Return a resolved promise
+        return Promise.resolve(); 
     }
 
     return fetch(API_URL, {
@@ -361,14 +353,164 @@ function loadUserWishlist() {
     
 }
 
-
+///////////////////////////////
+async function savePreferences() {
+    const apiKey = getApiKey();
+    const auth = getAuth();
     
-    brandSelect.addEventListener('change', () => { currentPage = 1; loadProducts(); });
+    if (!auth || auth.user_id === '4' || auth.user_type === 'Admin') return;
+    
+    const preferences = {
+        preferred_brand: brandSelect.value === 'all' ? null : brandSelect.options[brandSelect.selectedIndex].text,
+        preferred_category: categorySelect.value === 'all' ? null : categorySelect.options[categorySelect.selectedIndex].text,
+        preferred_price_range: priceSelect.value,
+        sort_order: sortSelect.value === 'price_asc' ? 'Price: Low to High' : 
+                   sortSelect.value === 'price_desc' ? 'Price: High to Low' : null
+    };
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'AddUserPreferences',
+                api_key: apiKey,
+                user_id: auth.user_id,
+                ...preferences
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            showSaveSuccess();
+        } else {
+            console.error('Failed to save preferences:', result.message);
+        }
+    } catch (error) {
+        console.error('Error saving preferences:', error);
+    }
+}
+function checkLoginStatus() {
+    const apiKey = getApiKey();
+    const auth = getAuth();
+    
+    // Disable button if not logged in or is guest/admin
+    if (!auth || auth.user_id === '4' || auth.user_type === 'Admin') {
+        savePrefsBtn.disabled = true;
+        savePrefsBtn.title = 'Please login as customer to save preferences';
+    } else {
+        savePrefsBtn.disabled = false;
+    }
+}
+
+function showSaveSuccess() {
+    preferencesSavedMsg.style.display = 'block';
+    setTimeout(() => {
+        preferencesSavedMsg.style.display = 'none';
+    }, 3000);
+}
+
+
+async function loadUserPreferences() {
+    const apiKey = getApiKey();
+    const auth = getAuth();
+    
+    if (!auth || auth.user_id === '4' || auth.user_type === 'Admin') return;
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                type: 'GetUserPreferences',
+                api_key: apiKey,
+                user_id: auth.user_id
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success' && result.preferences) {
+            const prefs = result.preferences;
+            
+            // Apply brand preference
+            if (prefs.preferred_brand) {
+                for (let i = 0; i < brandSelect.options.length; i++) {
+                    if (brandSelect.options[i].text === prefs.preferred_brand) {
+                        brandSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // Apply category preference
+            if (prefs.preferred_category) {
+                for (let i = 0; i < categorySelect.options.length; i++) {
+                    if (categorySelect.options[i].text === prefs.preferred_category) {
+                        categorySelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // Apply price range
+            if (prefs.preferred_price_range) {
+                priceSelect.value = prefs.preferred_price_range;
+            }
+            
+            // Apply sort order
+            if (prefs.sort_order) {
+                sortSelect.value = prefs.sort_order === 'Price: Low to High' ? 'price_asc' :
+                                 prefs.sort_order === 'Price: High to Low' ? 'price_desc' : 'default';
+            }
+            
+            // Trigger product reload with new preferences
+            currentPage = 1;
+            loadProducts();
+        }
+    } catch (error) {
+        console.error('Error loading preferences:', error);
+    }
+}
+
+
+
+
+
+//////////////////////////////////////////////////////////////////
+
+
+brandSelect.addEventListener('change', () => { currentPage = 1; loadProducts(); });
 categorySelect.addEventListener('change', () => { currentPage = 1; loadProducts(); });
 priceSelect.addEventListener('change', () => { currentPage = 1; loadProducts(); });
 sortSelect.addEventListener('change', () => { currentPage = 1; loadProducts(); });
 searchButton.addEventListener('click', () => { currentPage = 1; loadProducts(); });
 
-    // Initial load
-    //loadProducts();
+
+
+
+savePrefsBtn.addEventListener('click', savePreferences);
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkLoginStatus();
+    loadUserWishlist().then(() => {
+        loadUserPreferences(); 
+        loadProducts();
+    });
+    
+    
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'auth') {
+            checkLoginStatus();
+            loadUserPreferences();
+        }
+    });
+});
+    
 });

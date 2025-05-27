@@ -47,25 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-//   function renderWishlistItem(product) {
-//     const item = document.createElement('div');
-//     item.className = 'wishlist-item';
-
-//     item.innerHTML = `
-//       <img src="${product.thumbnail}" alt="${product.title}">
-//       <div class="title">
-//         <a href="view.php?id=${product.product_id}">${product.title}</a>
-//       </div>
-//       <button class="remove-btn" data-id="${product.product_id}">Remove</button>
-//     `;
-
-//     const removeBtn = item.querySelector('.remove-btn');
-//     removeBtn.addEventListener('click', () => {
-//       removeFromWishlist(auth.api_key, product.product_id, item);
-//     });
-
-//     wishlistContainer.appendChild(item);
-//   }
 
 
 function renderWishlistItem(product) {

@@ -5,10 +5,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Set page title
+
 $pageTitle = "Product Details - Compareit";
 
-// Include header
 include 'header.php';
 ?>
 

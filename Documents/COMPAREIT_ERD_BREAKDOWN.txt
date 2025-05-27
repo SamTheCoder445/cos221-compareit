@@ -1,0 +1,75 @@
+COMPAREIT DATABASE SCHEMA - ER DIAGRAM BREAKDOWN
+
+ENTITY TYPES:
+1. STRONG ENTITIES
+   - Products (product_id PK, title, description, etc.)
+   - Retailers (retailer_id PK, name, website, etc.)
+   - Brands (brand_id PK, name)
+   - Categories (category_id PK, name)
+   - Users (user_id PK, email, password etc.)
+
+2. WEAK ENTITIES (depend on strong entities for identity)
+   - Product Reviews (Date, + product_id FK, + user_id FK)
+   - User Preferences (date_saved PPK, + customer_id FK)
+   - Wishlist (Created_at PPK, + customer_id FK etc)
+
+3. SPECIALIZATIONS (inheritance)
+   - Users
+     ├─ Customers (additional: shipping_address, etc.)
+     └─ Admin (additional: permissions_level)
+
+4. ASSOCIATIVE ENTITY
+   - Prices (composite PK: product_id + retailer_id, price)
+
+RELATIONSHIPS:
+1. PRODUCT-RELATED
+   - Products ↔ Retailers (M:N via Prices)
+     - Products: TOTAL participation (must have ≥1 price)
+     - Retailers: PARTIAL participation (may have 0 products)
+   
+   - Products → Brands (M:1)
+     - Products: PARTIAL (may have no brand)
+     - Brands: PARTIAL (may have 0 products)
+   
+   - Products → Categories (M:1)
+     - Products: TOTAL (must have 1 category)
+     - Categories: PARTIAL
+
+2. USER-RELATED
+   - Users → Product Reviews (1:M)
+     - Reviews: TOTAL (must have user)
+     - Users: PARTIAL (may have 0 reviews)
+   
+   - Customers ↔ User Preferences (1:1)
+     - Preferences: TOTAL (must have customer)
+     - Customers: PARTIAL
+   
+   - Customers ↔ Wishlist (1:1)
+     - Both: PARTIAL
+
+3. CROSS-RELATIONS
+   - Products ↔ Wishlist (M:1)
+     - Both: PARTIAL
+   - Products ↔ Reviews (1:M)
+     - Reviews: TOTAL
+     - Products: PARTIAL
+
+KEY ASSUMPTIONS:
+1. Business Rules:
+   - All products must be sold by ≥1 retailer (via Prices)
+   - Products must belong to exactly 1 category
+   - Reviews cannot exist without both product and user
+   - Customers may opt out of preferences/wishlist
+
+2. Design Choices:
+   - Prices is associative (not weak) because:
+     * Exists to resolve M:N relationship
+     * Has composite PK from two strong entities
+     * Can contain independent attributes (price, discount)
+   - Weak entities use partial keys + foreign keys as PPK
+
+3. Inheritance:
+   - User specialization is disjoint (user is either Customer OR Admin)
+   - Implemented with type discriminator in Users table
+
+

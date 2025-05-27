@@ -1,0 +1,52 @@
+===========================
+CompareIt Data Overview
+===========================
+
+1. DATA SOURCES
+---------------
+The product data for this application is retrieved from the public API:
+https://dummyjson.com/products?limit=200
+
+This API provides a variety of dummy products, including their:
+- Titles
+- Descriptions
+- Brands
+- Categories
+- Prices
+- Images
+- Dummy reviews
+
+We also define a manual mapping of product categories to simulated South African and international retailers (e.g., Ackermans, Edgars, Amazon, Takealot, Makro, etc.) in our Java code. This mapping simulates where each product might be available.
+
+2. DATA ENTRY METHODS
+---------------------
+All product data is entered into our MariaDB database using a custom Java script named `DataFetcher.java`. This process is entirely automated.
+
+The script performs the following steps:
+
+(1) FETCHING DATA:
+    - Sends a GET request to the API.
+    - Retrieves all product information in JSON format.
+
+(2) PARSING:
+    - Uses the GSON library to convert the JSON into Java objects.
+    - Models include: Product, Brand, Category, Price, UserReview, etc.
+
+(3) INSERTING INTO DATABASE:
+    - Connects to the database using JDBC.
+    - Inserts data into `products`, `brands`, `categories`, `prices`, `product_images`, and `dummy_reviews` tables.
+    - Uses SQL features like `REPLACE INTO` and `ON DUPLICATE KEY UPDATE` to prevent duplication.
+
+(4) HANDLING BRANDS AND CATEGORIES:
+    - Checks if each brand or category already exists.
+    - If not, inserts new entries into the database.
+
+(5) GENERATING PRICES:
+    - For each eligible retailer, assigns a price between 90%–110% of the base price.
+    - Simulates price variation across different retailers.
+
+(6) INSERTING IMAGES & REVIEWS:
+    - Saves each product’s images into the `product_images` table.
+    - Dummy reviews are added to the `dummy_reviews` table.
+
+
