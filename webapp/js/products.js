@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> f95591a17cc98e3fe996c6b6a49d4af947a7e680
 document.addEventListener('DOMContentLoaded', () => {
     const API_URL = "../php/api.php";
 let currentPage = 1;
@@ -77,6 +80,7 @@ loadUserWishlist().then(loadProducts);
             });
         }
     });
+<<<<<<< HEAD
 
     
     function showLoader() {
@@ -88,6 +92,8 @@ function hideLoader() {
 }
 
 
+=======
+>>>>>>> f95591a17cc98e3fe996c6b6a49d4af947a7e680
 function loadProducts() {
 
         showLoader(); // <-- Show loader when starting fetch
@@ -242,6 +248,7 @@ hideLoader(); // <-- Hide loader after response is handled
         return 'b14561c4fc744210fe86c1eb1ab4a0663640ff12f75e6b7dfca9b4a37eca4756';
     }
 
+<<<<<<< HEAD
 
 
 function getAuth() {
@@ -485,6 +492,8 @@ async function loadUserPreferences() {
 //////////////////////////////////////////////////////////////////
 
 
+=======
+>>>>>>> f95591a17cc98e3fe996c6b6a49d4af947a7e680
 brandSelect.addEventListener('change', () => { currentPage = 1; loadProducts(); });
 categorySelect.addEventListener('change', () => { currentPage = 1; loadProducts(); });
 priceSelect.addEventListener('change', () => { currentPage = 1; loadProducts(); });

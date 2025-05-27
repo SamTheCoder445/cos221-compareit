@@ -1,5 +1,11 @@
 <?php
+
+use LDAP\Result;
+
 header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 require_once __DIR__ . '/config.php';
 
 
@@ -59,6 +65,7 @@ class API {
                 case 'GetAllPrices':
                  $this->getAllPrices($data);
                  break;
+<<<<<<< HEAD
                 case 'AddReview':
                  $this->addReview($data);
                  break;
@@ -73,18 +80,23 @@ class API {
                 break;case 'GetWishlist':
                 $this->getWishlist($data);
                 break;
+=======
+>>>>>>> f95591a17cc98e3fe996c6b6a49d4af947a7e680
                 case 'GetDashboardData':
                     $this->getDashboardData();
                     break;
                 case 'GetDashboardGraphData':
                     $this->getDashboardGraphData();
                     break;
+<<<<<<< HEAD
                 case 'AddUserPreferences':
                 $this->addUserPreferences($data); 
                 break;
                 case 'GetUserPreferences':
                 $this->getUserPreferences($data);
                 break;
+=======
+>>>>>>> f95591a17cc98e3fe996c6b6a49d4af947a7e680
                 default:
                  case 'GetWishlist':
                 $this->getWishlist($data);
@@ -531,8 +543,36 @@ private function getProductImages($data) {
     ]);
 }
 
+private function getDashboardData(){
+    /*
+        "status" -> "success"
+        "data": [
+            "user"=> [
+                "count" => 1200,
+                "percentage_increase": 2.3%
+            ],
+            "products" =>[
+                "count" => 1200,
+                "percentage_increase": 3.2%
+            ]
+            "reviews"=> [
+                "count" => 1200,
+                "percentage_increase": 2.3%
+            ],
+            "stores" =>[
+                "count" => 1200,
+                "percentage_increase": 0%
+            ]
+        ]
+    */
+    try{
+        $userCount = $this->getCount("users");
+        $userGrowth = $this->getGrowth("users", "created_at");
 
+        $productsCount = $this->getCount("products");
+        $productsGrowth = $this->getGrowth("products", "created_at");
 
+<<<<<<< HEAD
 private function addReview($data) {
     if (!isset($data['apikey'], $data['product_id'], $data['review_rating'], $data['comment'])) {
         $this->sendError("Missing required fields", 400);
@@ -683,8 +723,187 @@ private function addToWishlist($data) {
 
     $this->sendSuccess(['message' => 'Product added to wishlist']);
 }
+=======
+        $retailersCount = $this->getCount("retailers");
+        $retailersGrowth = $this->getGrowth("retailers", "created_at");
+>>>>>>> f95591a17cc98e3fe996c6b6a49d4af947a7e680
 
+        $reviewCount = $this->getCount("dummy_reviews");
+        $reviewsGrowth = $this->getGrowth("dummy_reviews", "review_date");
 
+        $topCategories = $this->getTopCategories();
+
+        http_response_code(200);
+        echo json_encode([
+            "status" => "success",
+            "data" => [
+                "users"=> [
+                    "count" => $userCount,
+                    "growth" => $userGrowth
+                ],
+                "products" =>[
+                    "count" => $productsCount,
+                    "growth" => $productsGrowth
+                ],
+                "retailers"=> [
+                    "count" => $retailersCount,
+                    "growth" => $retailersGrowth
+                ],
+                "reviews" =>[
+                    "count" => $reviewCount,
+                    "growth" => $reviewsGrowth
+                ],
+                "top_categories" => $topCategories
+            ]
+        ]);
+    }catch(Exception $e){
+        http_response_code(500);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Interal Server Error: ".$e
+        ]);
+        exit;
+    }
+    
+}
+
+private function getCount($table){
+    $allowedTables = ['users', 'products', 'retailers', 'dummy_reviews'];
+
+    if(!in_array($table, $allowedTables)){
+        http_response_code(404);
+        echo json_encode([
+            "status" => "success",
+            "message" => "table not recognised: ".$table
+        ]);
+        exit;
+    }
+    $stmt = $this->conn->prepare("SELECT COUNT(*) FROM ".$table);
+    $stmt->execute();
+    $count = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    return $count;
+}
+private function getGrowth($table, $column){
+    $allowedTables = ['users', 'products', 'retailers', 'dummy_reviews'];
+
+    if(!in_array($table, $allowedTables)){
+        http_response_code(404);
+        echo json_encode([
+            "status" => "success",
+            "message" => "table not recognised: " .$table
+        ]);
+        exit;
+    }
+    $sql = "SELECT
+            COUNT(CASE WHEN {$column} >= NOW() - INTERVAL 30 DAY THEN 1 END) AS recent,
+            COUNT(CASE WHEN {$column} >= NOW() - INTERVAL 60 DAY AND {$column} < NOW() - INTERVAL 30 DAY THEN 1 END) AS previous
+            FROM {$table}";
+
+    $stmt = $this->conn->prepare($sql);
+    if(!$stmt->execute()){
+        $this->sendError("Query execution failed", 500);
+    }
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $recent = (int)$results['recent'];
+    $previous = (int)$results['previous'];
+    $growth = $previous > 0 ? (($recent - $previous) / $previous)*100 : 0;
+    return $growth;
+}
+private function getDashboardGraphData(){
+    $priceData = $this->getPricesTrend();
+    $wishlistData = $this->getWishlistTrend();
+
+    http_response_code(200);
+    echo json_encode([
+        "status" => "success",
+        "data" => [
+            "prices" => [
+                "labels" => array_column($priceData, 'date'),
+                'average' => array_column($priceData, 'average_price'),
+                'data_points' => array_column($priceData, 'data_points')
+            ],
+            "wishlists" => [
+                "labels" => array_column($wishlistData, 'data'),
+                'data_points' => array_column($wishlistData, 'data_points')
+            ]
+        ]
+    ]);
+}
+private function getPricesTrend(){
+    $sql = "SELECT 
+                DATE(p.created_at) AS date,
+                ROUND(AVG(pr.price), 2) AS average_price,
+                COUNT(*) AS data_points
+            FROM 
+                prices pr
+            JOIN 
+                products p ON pr.product_id = p.product_id
+            WHERE 
+                p.created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+            GROUP BY 
+                DATE(p.created_at)
+            ORDER BY 
+                date ASC";
+
+    try{
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }catch(PDOException $e){
+        error_log("Database error in getPricesTrend(): ".$e->getMessage());
+        $this->sendError("Internal Server Issue", 500);
+    }
+}
+private function getWishlistTrend(){
+    $sql = "SELECT
+                DATE(created_at) as date,
+                COUNT(*) as save_count
+            FROM
+                wishlists
+            WHERE created_at >- DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+            GROUP BY DATE(created_at)
+            ORDER BY date ASC
+            ";
+    try{
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }catch(PDOException $e){
+        error_log("Database error in getWishlistTrend(): ".$e->getMessage());
+        $this->sendError("Internal Server Issue:", 500);
+    }
+}
+
+private function getTopCategories(){
+    $sql = "SELECT 
+                p.product_id,
+                p.title AS product_name,
+                COUNT(*) AS save_count,
+                COUNT(DISTINCT w.user_id) AS unique_users
+            FROM 
+                wishlists w
+            JOIN 
+                products p ON w.product_id = p.product_id
+            WHERE 
+                w.created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+            GROUP BY 
+                w.product_id
+            ORDER BY 
+                save_count DESC
+            LIMIT 5;";
+    try{
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }catch(PDOException $e){
+        error_log("Database error in getWishlistTrend(): ".$e->getMessage());
+        $this->sendError("Internal Server Issue:" .$e->getMessage(), 500);
+    }
+}
 
 
 private function removeFromWishlist($data) {
